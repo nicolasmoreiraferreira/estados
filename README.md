@@ -14,7 +14,7 @@ permissão — com um simulador que força cada situação em dois cliques.
 ![TypeScript](https://img.shields.io/badge/TypeScript-estrito-3178c6?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-646cff?style=flat-square&logo=vite&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-165-6da13f?style=flat-square)
+![Testes](https://img.shields.io/badge/testes-175-6da13f?style=flat-square)
 
 [Acessar a demonstração](https://nicolasmoreiraferreira.github.io/estados/) · [Decisões técnicas](https://nicolasmoreiraferreira.github.io/estados/#/sobre)
 

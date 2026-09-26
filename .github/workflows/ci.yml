@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: tipos e lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: TypeScript
+        run: npm run typecheck
+      - name: ESLint
+        run: npm run lint
+
+  testes:
+    name: testes unitários
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run coverage
+      - name: Publicar cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: coverage/
+          retention-days: 7
+
+  estados:
+    name: estados em navegador
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Instalar Chromium
+        run: npx playwright install chromium --with-deps
+      - name: Testar cada condição nas quatro telas
+        run: npx playwright test
+      - name: Guardar relatório em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-playwright
+          path: playwright-report/
+          retention-days: 7
+
+  # O deploy só acontece se os três jobs acima passarem: publicar demonstração
+  # quebrada é pior que não publicar. Também roda apenas na main — pull request
+  # não deve mexer no site publicado.
+  publicar:
+    name: publicar demonstração
+    needs: [qualidade, testes, estados]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Compilar com o caminho do repositório
+        # O GitHub Pages serve o site em /estados/, então o Vite precisa gerar
+        # caminhos relativos a esse diretório. Sem isso, o CSS e o JS dariam 404.
+        run: npm run build
+        env:
+          VITE_BASE: /estados/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deploy
+        uses: actions/deploy-pages@v4

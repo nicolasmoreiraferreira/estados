@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+
+    /* Rigor máximo: o projeto existe para provar que erro é tratado em tempo de
+       compilação, não em produção. Cada opção abaixo já evitou um defeito real
+       durante a construção — os casos estão documentados em docs/decisoes.md. */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "tests/unit"]
+}

@@ -1,0 +1,154 @@
+@import 'tailwindcss';
+
+/**
+ * Tokens do tema.
+ *
+ * Centralizados aqui em vez de espalhar valores pelo JSX: mudar a cor de erro
+ * ou o raio das bordas é editar uma linha, não caçar dezesseis. As cores de
+ * estado (erro, aviso, atenção, sucesso) existem como token porque carregam
+ * significado — são usadas em conjunto com ícone e texto, nunca sozinhas para
+ * dizer alguma coisa.
+ */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', monospace;
+
+  --color-fundo: oklch(0.99 0.003 250);
+  --color-superficie: oklch(1 0 0);
+  --color-superficie-2: oklch(0.975 0.005 250);
+  --color-borda: oklch(0.9 0.008 250);
+  --color-borda-forte: oklch(0.82 0.012 250);
+  --color-texto: oklch(0.22 0.02 260);
+  --color-texto-suave: oklch(0.48 0.018 260);
+  --color-texto-fraco: oklch(0.62 0.015 260);
+
+  --color-marca: oklch(0.55 0.17 255);
+  --color-marca-suave: oklch(0.96 0.03 255);
+
+  --color-erro: oklch(0.55 0.2 25);
+  --color-erro-suave: oklch(0.97 0.02 25);
+  --color-aviso: oklch(0.65 0.15 70);
+  --color-aviso-suave: oklch(0.97 0.04 80);
+  --color-atencao: oklch(0.6 0.13 200);
+  --color-atencao-suave: oklch(0.96 0.03 200);
+  --color-sucesso: oklch(0.58 0.14 155);
+  --color-sucesso-suave: oklch(0.96 0.03 155);
+
+  --radius-caixa: 0.75rem;
+  --radius-pilula: 999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-fundo: oklch(0.17 0.015 260);
+    --color-superficie: oklch(0.21 0.018 260);
+    --color-superficie-2: oklch(0.25 0.02 260);
+    --color-borda: oklch(0.31 0.02 260);
+    --color-borda-forte: oklch(0.4 0.025 260);
+    --color-texto: oklch(0.95 0.01 260);
+    --color-texto-suave: oklch(0.76 0.015 260);
+    --color-texto-fraco: oklch(0.62 0.015 260);
+
+    --color-marca: oklch(0.7 0.15 255);
+    --color-marca-suave: oklch(0.3 0.06 255);
+
+    --color-erro: oklch(0.7 0.17 25);
+    --color-erro-suave: oklch(0.28 0.06 25);
+    --color-aviso: oklch(0.78 0.14 75);
+    --color-aviso-suave: oklch(0.3 0.06 75);
+    --color-atencao: oklch(0.75 0.12 200);
+    --color-atencao-suave: oklch(0.29 0.05 200);
+    --color-sucesso: oklch(0.72 0.14 155);
+    --color-sucesso-suave: oklch(0.28 0.05 155);
+  }
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-borda);
+  }
+
+  html {
+    color-scheme: light dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-fundo);
+    color: var(--color-texto);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Foco sempre visível: requisito, não enfeite. */
+  :focus-visible {
+    outline: 2px solid var(--color-marca);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Pulso do esqueleto: comunica "está vindo" sem prender a atenção. */
+  @keyframes pulso-esqueleto {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  .animar-pulso {
+    animation: pulso-esqueleto 1.6s ease-in-out infinite;
+  }
+
+  @keyframes entrada {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .animar-entrada {
+    animation: entrada 0.22s ease-out;
+  }
+
+  /* Esconde visualmente, mantendo para leitores de tela. */
+  .apenas-leitor {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

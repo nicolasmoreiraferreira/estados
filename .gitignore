@@ -1,0 +1,32 @@
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+dist-ssr/
+*.local
+
+# Testes
+coverage/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

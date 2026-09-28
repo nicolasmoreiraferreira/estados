@@ -69,18 +69,20 @@ jobs:
   # O deploy só acontece se os três jobs acima passarem: publicar demonstração
   # quebrada é pior que não publicar. Também roda apenas na main — pull request
   # não deve mexer no site publicado.
+  #
+  # A publicação é feita empurrando o build para o branch `gh-pages`, e não com
+  # as ações oficiais de Pages. Motivo: as ações exigem a permissão `pages`, que
+  # só o dono do repositório pode conceder, e sem ela o deploy falha com
+  # "Resource not accessible by integration". O branch, por outro lado, ativa o
+  # Pages sozinho na primeira publicação e funciona com permissão de escrita no
+  # conteúdo, que o workflow já tem.
   publicar:
     name: publicar demonstração
     needs: [qualidade, testes, estados]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -94,14 +96,16 @@ jobs:
         run: npm run build
         env:
           VITE_BASE: /estados/
-      # `enablement: true` liga o Pages na primeira execução. Sem isso, o deploy
-      # falha com "Not Found" enquanto o Pages não for ativado à mão nas
-      # configurações do repositório.
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-      - id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Publicar no branch gh-pages
+        run: |
+          # `.nojekyll` impede o Jekyll de processar o build e descartar a pasta
+          # `assets`, que começa com underscore em alguns projetos.
+          touch dist/.nojekyll
+          cd dist
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Publica a demonstração do commit ${GITHUB_SHA::7}"
+          git branch -M gh-pages
+          git push -f -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
